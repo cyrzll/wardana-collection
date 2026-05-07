@@ -24,14 +24,14 @@ const { resolveImage } = useImage()
 <template>
   <div class="min-h-screen bg-neutral-50">
     <!-- Header Section -->
-    <header class="pt-32 pb-10 px-6 max-w-7xl mx-auto">
-      <h1 class="text-4xl md:text-5xl font-serif text-soft-black mb-4 capitalize" v-motion-fade>{{ pageTitle }}</h1>
-      <p class="text-[10px] md:text-xs text-muted uppercase tracking-[0.4em]" v-motion-fade-visible-once>Jelajahi rangkaian desain teliti kami.</p>
+    <header class="pt-24 md:pt-32 pb-6 md:pb-10 px-6 md:px-10 max-w-7xl mx-auto">
+      <h1 class="text-3xl md:text-5xl font-serif text-soft-black mb-2 md:mb-4 capitalize" v-motion-fade>{{ pageTitle }}</h1>
+      <p class="text-[8px] md:text-xs text-muted uppercase tracking-[0.3em] md:tracking-[0.4em]" v-motion-fade-visible-once>Jelajahi rangkaian desain teliti kami.</p>
     </header>
 
     <!-- Product Grid -->
-    <main class="max-w-7xl mx-auto px-6 pb-20">
-      <div v-if="products && products.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
+    <main class="max-w-7xl mx-auto px-6 md:px-10 pb-20">
+      <div v-if="products && products.length" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-12">
         <NuxtLink 
           v-for="product in products" 
           :key="product.id"
@@ -57,26 +57,26 @@ const { resolveImage } = useImage()
             </div>
             
             <!-- Quick Add Overlay (Premium feel) -->
-            <div class="absolute inset-0 bg-soft-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center p-6">
-              <div class="w-full bg-white text-soft-black py-3 text-center text-[9px] uppercase tracking-[0.2em] font-bold hover:bg-soft-black hover:text-white transition-all duration-300">
+            <div class="absolute inset-0 bg-soft-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center p-3 md:p-6">
+              <div class="w-full bg-white text-soft-black py-2 md:py-3 text-center text-[8px] md:text-[9px] uppercase tracking-[0.2em] font-bold hover:bg-soft-black hover:text-white transition-all duration-300">
                 Lihat Koleksi
               </div>
             </div>
           </div>
 
           <!-- Product Info -->
-          <div class="mt-6 space-y-3">
+          <div class="mt-4 md:mt-6 space-y-2 md:space-y-3">
             <div class="flex justify-between items-center">
-              <p class="text-[9px] text-muted uppercase tracking-[0.2em]">{{ product.category_name || 'Essentials' }}</p>
-              <div v-if="product.sizes?.length" class="flex gap-1.5">
+              <p class="text-[7px] md:text-[9px] text-muted uppercase tracking-[0.2em]">{{ product.category_name || 'Essentials' }}</p>
+              <div v-if="product.sizes?.length" class="hidden sm:flex gap-1.5">
                 <span v-for="size in product.sizes.slice(0, 3)" :key="size" class="text-[7px] border border-border px-1.5 py-0.5 uppercase text-soft-black font-bold">{{ size }}</span>
               </div>
             </div>
-            <h3 class="text-sm font-serif text-soft-black line-clamp-1 leading-relaxed">{{ product.name }}</h3>
+            <h3 class="text-xs md:text-sm font-serif text-soft-black line-clamp-1 leading-relaxed">{{ product.name }}</h3>
             
-            <div class="flex items-center gap-3 pt-1 border-t border-neutral-50">
-              <p class="text-sm font-sans font-bold text-soft-black tracking-tight">Rp{{ product.price.toLocaleString('id-ID') }}</p>
-              <p v-if="product.discount > 0" class="text-[10px] font-sans text-neutral-400 line-through decoration-red-400/30">
+            <div class="flex items-center gap-2 md:gap-3 pt-1 border-t border-neutral-50">
+              <p class="text-xs md:text-sm font-sans font-bold text-soft-black tracking-tight">Rp{{ product.price.toLocaleString('id-ID') }}</p>
+              <p v-if="product.discount > 0" class="text-[8px] md:text-[10px] font-sans text-neutral-400 line-through decoration-red-400/30">
                 Rp{{ product.selling_price.toLocaleString('id-ID') }}
               </p>
             </div>

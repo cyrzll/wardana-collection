@@ -142,45 +142,47 @@ function proceedToCheckout() {
             <span class="text-xs font-bold uppercase tracking-widest">Pilih Semua ({{ cartItems.length }})</span>
           </div>
 
-          <div v-for="item in cartItems" :key="item.id" class="flex gap-6 pb-8 border-b border-border group">
-            <!-- Checkbox -->
-            <div class="pt-16">
-              <button @click="toggleSelect(item)" 
-                class="w-5 h-5 border flex items-center justify-center transition-colors"
-                :class="isSelected(item) ? 'bg-soft-black border-soft-black text-white' : 'border-neutral-300 bg-white'"
-              >
-                <Check v-if="isSelected(item)" :size="14" />
-              </button>
-            </div>
-
-            <!-- Image -->
-            <div class="w-32 h-44 bg-neutral-100 border border-border overflow-hidden flex-shrink-0 relative">
-              <img :src="item.image" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-            </div>
-            
-            <div class="flex-1 flex flex-col justify-between py-2">
-              <div>
-                <div class="flex justify-between items-start">
-                  <h3 class="text-xs uppercase tracking-[0.2em] font-bold text-soft-black">{{ item.name }}</h3>
-                  <button @click="remove(item)" class="text-neutral-400 hover:text-red-500 transition-colors">
-                    <Trash2 :size="16" />
-                  </button>
-                </div>
-                <p class="text-[10px] text-muted uppercase tracking-widest mt-1">{{ item.variant }} / {{ item.size }}</p>
-                <p class="text-sm font-medium mt-4">Rp{{ item.price.toLocaleString('id-ID') }}</p>
+          <div v-for="item in cartItems" :key="item.id" class="flex flex-col sm:flex-row gap-4 sm:gap-6 pb-8 border-b border-border group relative">
+            <div class="flex gap-4 sm:gap-6">
+              <!-- Checkbox -->
+              <div class="pt-8 sm:pt-16">
+                <button @click="toggleSelect(item)" 
+                  class="w-5 h-5 border flex items-center justify-center transition-colors"
+                  :class="isSelected(item) ? 'bg-soft-black border-soft-black text-white' : 'border-neutral-300 bg-white'"
+                >
+                  <Check v-if="isSelected(item)" :size="14" />
+                </button>
               </div>
 
-              <div class="flex justify-between items-end">
-                <div class="flex items-center border border-border">
-                  <button @click="updateQuantity(item, -1)" class="px-3 py-2 hover:bg-neutral-50 transition-colors">
-                    <Minus :size="14" />
-                  </button>
-                  <span class="px-4 text-xs font-bold">{{ item.quantity }}</span>
-                  <button @click="updateQuantity(item, 1)" class="px-3 py-2 hover:bg-neutral-50 transition-colors">
-                    <Plus :size="14" />
-                  </button>
+              <!-- Image -->
+              <div class="w-24 h-32 sm:w-32 sm:h-44 bg-neutral-100 border border-border overflow-hidden flex-shrink-0 relative">
+                <img :src="item.image" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              </div>
+              
+              <div class="flex-1 flex flex-col justify-between py-1 sm:py-2">
+                <div>
+                  <div class="flex justify-between items-start">
+                    <h3 class="text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold text-soft-black truncate max-w-[150px] sm:max-w-none">{{ item.name }}</h3>
+                    <button @click="remove(item)" class="text-neutral-400 hover:text-red-500 transition-colors sm:static absolute top-0 right-0">
+                      <Trash2 :size="16" />
+                    </button>
+                  </div>
+                  <p class="text-[8px] sm:text-[10px] text-muted uppercase tracking-widest mt-1">{{ item.variant }} / {{ item.size }}</p>
+                  <p class="text-xs sm:text-sm font-medium mt-2 sm:mt-4">Rp{{ item.price.toLocaleString('id-ID') }}</p>
                 </div>
-                <p class="text-sm font-bold">Rp{{ (item.price * item.quantity).toLocaleString('id-ID') }}</p>
+
+                <div class="flex justify-between items-end mt-4 sm:mt-0">
+                  <div class="flex items-center border border-border scale-90 sm:scale-100 origin-left">
+                    <button @click="updateQuantity(item, -1)" class="px-2 sm:px-3 py-1 sm:py-2 hover:bg-neutral-50 transition-colors">
+                      <Minus :size="12" />
+                    </button>
+                    <span class="px-3 sm:px-4 text-[10px] sm:text-xs font-bold">{{ item.quantity }}</span>
+                    <button @click="updateQuantity(item, 1)" class="px-2 sm:px-3 py-1 sm:py-2 hover:bg-neutral-50 transition-colors">
+                      <Plus :size="12" />
+                    </button>
+                  </div>
+                  <p class="text-xs sm:text-sm font-bold">Rp{{ (item.price * item.quantity).toLocaleString('id-ID') }}</p>
+                </div>
               </div>
             </div>
           </div>

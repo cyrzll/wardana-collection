@@ -74,7 +74,13 @@ const currentDiscount = computed(() => {
 })
 
 const availableSizes = computed(() => {
-  return currentVariant.value?.sizes || product.value?.sizes || []
+  return currentVariant.value?.sizes || []
+})
+
+const currentSizeStock = computed(() => {
+  if (!currentVariant.value || !selectedSize.value) return 0
+  const sizeObj = currentVariant.value.sizes?.find(s => s.name === selectedSize.value)
+  return sizeObj ? parseInt(sizeObj.stock || 0) : 0
 })
 
 // Reset state when variant changes
@@ -86,7 +92,7 @@ watch([selectedFit, selectedSize], () => {
 watch(product, (newVal) => {
   if (newVal) {
     if (newVal.options?.length) selectedFit.value = newVal.options[0]
-    if (availableSizes.value.length) selectedSize.value = availableSizes.value[0]
+    if (availableSizes.value.length) selectedSize.value = availableSizes.value[0].name
   }
 }, { immediate: true })
 
@@ -229,11 +235,11 @@ if (error.value) {
   <div class="min-h-screen bg-white pt-24 pb-20">
     <div class="max-w-7xl mx-auto px-6">
       <!-- Back Button & Breadcrumb -->
-      <div class="mb-10 flex items-center gap-6">
+      <div class="mb-6 md:mb-10 flex items-center gap-4 md:gap-6">
         <ButtonBackButton />
-        <nav class="flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted">
+        <nav class="flex items-center gap-2 text-[8px] md:text-[10px] uppercase tracking-widest text-muted">
           <span>/</span>
-          <span class="text-soft-black font-bold">{{ product.name }}</span>
+          <span class="text-soft-black font-bold truncate max-w-[100px] md:max-w-none">{{ product.name }}</span>
         </nav>
       </div>
 
@@ -271,9 +277,9 @@ if (error.value) {
 
         <!-- Right: Product Details (5 cols) -->
         <div class="lg:col-span-5 space-y-10">
-          <div class="space-y-4">
-            <p class="text-xs uppercase tracking-[0.3em] text-muted">{{ product.category_name || 'Essentials' }}</p>
-            <h1 class="text-4xl md:text-5xl font-serif text-soft-black leading-tight">{{ product.name }}</h1>
+          <div class="space-y-3 md:space-y-4">
+            <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-muted">{{ product.category_name || 'Essentials' }}</p>
+            <h1 class="text-3xl md:text-5xl font-serif text-soft-black leading-tight">{{ product.name }}</h1>
             
             <div class="flex items-end gap-4 pt-2">
               <p class="text-2xl font-sans font-medium text-soft-black">Rp{{ displayedPrice.toLocaleString('id-ID') }}</p>
@@ -313,34 +319,41 @@ if (error.value) {
               <div class="grid grid-cols-4 gap-2">
                 <button 
                   v-for="size in availableSizes" 
-                  :key="size"
-                  @click="selectedSize = size"
-                  class="py-3 text-[10px] uppercase tracking-widest border transition-all duration-300"
-                  :class="selectedSize === size ? 'bg-soft-black text-white border-soft-black font-bold' : 'border-border text-muted hover:border-soft-black hover:text-soft-black'"
+                  :key="size.name"
+                  @click="selectedSize = size.name"
+                  :disabled="parseInt(size.stock || 0) <= 0"
+                  class="py-3 text-[10px] uppercase tracking-widest border transition-all duration-300 relative overflow-hidden"
+                  :class="[
+                    selectedSize === size.name ? 'bg-soft-black text-white border-soft-black font-bold' : 'border-border text-muted hover:border-soft-black hover:text-soft-black',
+                    parseInt(size.stock || 0) <= 0 ? 'opacity-30 cursor-not-allowed bg-neutral-50' : ''
+                  ]"
                 >
-                  {{ size }}
+                  {{ size.name }}
+                  <div v-if="parseInt(size.stock || 0) <= 0" class="absolute inset-0 flex items-center justify-center rotate-12">
+                    <div class="w-full h-[1px] bg-neutral-400"></div>
+                  </div>
                 </button>
               </div>
             </div>
           </div>
 
           <!-- Inventory Status -->
-          <p v-if="currentVariant" class="text-[10px] uppercase tracking-widest" :class="currentVariant.stock <= 0 ? 'text-red-500' : 'text-green-600'">
-            {{ currentVariant.stock <= 0 ? 'Stok Habis' : `Stok: ${currentVariant.stock} tersedia` }}
+          <p v-if="selectedSize" class="text-[10px] uppercase tracking-widest" :class="currentSizeStock <= 0 ? 'text-red-500' : 'text-green-600'">
+            {{ currentSizeStock <= 0 ? 'Ukuran ini Habis' : `Stok Ukuran ${selectedSize}: ${currentSizeStock} tersedia` }}
           </p>
 
           <!-- Action Buttons -->
           <div class="pt-6 space-y-4">
             <!-- Primary: Checkout -->
-            <button @click="handlePrimaryAction" :disabled="currentVariant?.stock <= 0 || loadingCart" class="w-full bg-soft-black text-white py-5 text-[11px] uppercase tracking-[0.3em] font-bold hover:bg-neutral-800 transition-all active:scale-[0.98] disabled:bg-neutral-300 disabled:cursor-not-allowed shadow-lg shadow-soft-black/10 flex items-center justify-center gap-3">
+            <button @click="handlePrimaryAction" :disabled="currentSizeStock <= 0 || loadingCart" class="w-full bg-soft-black text-white py-5 text-[11px] uppercase tracking-[0.3em] font-bold hover:bg-neutral-800 transition-all active:scale-[0.98] disabled:bg-neutral-300 disabled:cursor-not-allowed shadow-lg shadow-soft-black/10 flex items-center justify-center gap-3">
               <Loader2 v-if="loadingCart" :size="16" class="animate-spin" />
-              {{ currentVariant?.stock <= 0 ? 'Habis Terjual' : 'Checkout Sekarang' }}
+              {{ currentSizeStock <= 0 ? 'Habis Terjual' : 'Checkout Sekarang' }}
             </button>
             
             <!-- Secondary Grid -->
             <div class="grid grid-cols-6 gap-3">
               <!-- Add to Bag (4 cols) -->
-              <button @click="toggleCart" :disabled="currentVariant?.stock <= 0 || loadingCart" class="col-span-4 flex items-center justify-center gap-3 py-4 border text-[10px] uppercase tracking-widest font-bold transition-all duration-300 disabled:opacity-50"
+              <button @click="toggleCart" :disabled="currentSizeStock <= 0 || loadingCart" class="col-span-4 flex items-center justify-center gap-3 py-4 border text-[10px] uppercase tracking-widest font-bold transition-all duration-300 disabled:opacity-50"
                 :class="inCart ? 'bg-soft-black text-white border-soft-black shadow-inner' : 'border-border hover:bg-neutral-50'">
                 <Loader2 v-if="loadingCart" :size="14" class="animate-spin" />
                 <template v-else>

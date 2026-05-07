@@ -134,7 +134,9 @@ router.post('/', upload.any(), async (req, res) => {
       });
       
       allImages.push(...variantImages);
-      totalStock += parseInt(config.stock || 0);
+      // Total stock is sum of all sizes stock in this variant
+      const variantStock = (config.sizes || []).reduce((acc, s) => acc + parseInt(s.stock || 0), 0);
+      totalStock += variantStock;
     });
 
     const firstVariant = processedVariants[0] || {};
@@ -160,7 +162,7 @@ router.post('/', upload.any(), async (req, res) => {
       stock: totalStock,
       images: JSON.stringify(allImages),
       options: JSON.stringify(processedVariants.map(v => v.name)),
-      sizes: JSON.stringify([...new Set(processedVariants.flatMap(v => v.sizes || []))]),
+      sizes: JSON.stringify([...new Set(processedVariants.flatMap(v => (v.sizes || []).map(s => s.name)))]),
       variants: JSON.stringify(processedVariants),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -208,7 +210,8 @@ router.put('/:id', upload.any(), async (req, res) => {
       });
       
       allImages.push(...variantImages);
-      totalStock += parseInt(config.stock || 0);
+      const variantStock = (config.sizes || []).reduce((acc, s) => acc + parseInt(s.stock || 0), 0);
+      totalStock += variantStock;
     });
 
     const firstVariant = processedVariants[0] || {};
@@ -229,7 +232,7 @@ router.put('/:id', upload.any(), async (req, res) => {
       stock: totalStock,
       images: JSON.stringify(allImages),
       options: JSON.stringify(processedVariants.map(v => v.name)),
-      sizes: JSON.stringify([...new Set(processedVariants.flatMap(v => v.sizes || []))]),
+      sizes: JSON.stringify([...new Set(processedVariants.flatMap(v => (v.sizes || []).map(s => s.name)))]),
       variants: JSON.stringify(processedVariants),
       updated_at: new Date().toISOString()
     };

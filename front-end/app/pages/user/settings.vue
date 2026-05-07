@@ -17,15 +17,15 @@ const walletBalance = ref(0)
 async function fetchStats() {
   if (!user.value) return
   try {
-    const [vouchers, orders, wishlist, wallet] = await Promise.all([
+    const [vouchers, orders, cartData, wallet] = await Promise.all([
       $fetch('/api/vouchers/my', { params: { user_id: user.value.id } }),
       $fetch('/api/orders/my', { params: { user_id: user.value.id } }).catch(() => []),
-      $fetch('/api/wishlist', { params: { user_id: user.value.id } }).catch(() => []),
+      $fetch('/api/cart/list', { params: { user_id: user.value.id } }).catch(() => ({ wishlist: [] })),
       $fetch('/api/users/wallet', { params: { user_id: user.value.id } }).catch(() => null)
     ])
     voucherCount.value = Array.isArray(vouchers) ? vouchers.length : 0
     orderCount.value = Array.isArray(orders) ? orders.length : 0
-    wishlistCount.value = Array.isArray(wishlist) ? wishlist.length : 0
+    wishlistCount.value = cartData?.wishlist ? cartData.wishlist.length : 0
     walletBalance.value = wallet ? wallet.balance : 0
   } catch (e) {
     console.error('Failed to fetch stats', e)
@@ -150,12 +150,12 @@ function handleLogout() {
           <!-- My Orders Status -->
           <section class="space-y-4">
             <h3 class="text-xs uppercase tracking-[0.2em] font-bold text-soft-black ml-1">Pesanan saya</h3>
-            <div class="bg-white border border-border grid grid-cols-4 divide-x divide-border">
-              <NuxtLink v-for="status in orderStatuses" :key="status.name" :to="status.path" class="p-8 flex flex-col items-center gap-3 hover:bg-neutral-50 transition-all group">
+            <div class="bg-white border border-border grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-border">
+              <NuxtLink v-for="status in orderStatuses" :key="status.name" :to="status.path" class="p-6 md:p-8 flex flex-col items-center gap-2 md:gap-3 hover:bg-neutral-50 transition-all group">
                 <div class="text-neutral-400 group-hover:text-soft-black transition-colors">
-                  <component :is="status.icon" :size="24" stroke-width="1.5" />
+                  <component :is="status.icon" :size="20" class="md:w-6 md:h-6" stroke-width="1.5" />
                 </div>
-                <p class="text-[10px] font-bold uppercase tracking-widest text-muted group-hover:text-soft-black transition-colors">{{ status.name }}</p>
+                <p class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-muted group-hover:text-soft-black transition-colors">{{ status.name }}</p>
               </NuxtLink>
             </div>
           </section>

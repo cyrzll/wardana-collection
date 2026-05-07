@@ -91,6 +91,42 @@ router.post('/cancel', async (req, res) => {
         });
       }
 
+      // Restore Product Stock
+      const productsSnap = await db.ref('products').once('value');
+      const allProducts = productsSnap.val() || {};
+      const items = Array.isArray(order.items) ? order.items : (typeof order.items === 'string' ? JSON.parse(order.items || '[]') : []);
+
+      for (const item of items) {
+        const productEntry = Object.entries(allProducts).find(([k, v]) => v && v.id == item.product_id);
+        if (productEntry) {
+          const [pKey, product] = productEntry;
+          let variants = typeof product.variants === 'string' ? JSON.parse(product.variants || '[]') : (product.variants || []);
+          
+          let stockUpdated = false;
+          variants = variants.map(v => {
+            if (v.name === item.variant) {
+              v.sizes = (v.sizes || []).map(s => {
+                if (s.name === item.size) {
+                  s.stock = parseInt(s.stock || 0) + parseInt(item.quantity);
+                  stockUpdated = true;
+                }
+                return s;
+              });
+            }
+            return v;
+          });
+
+          if (stockUpdated) {
+            const newTotalStock = parseInt(product.stock || 0) + parseInt(item.quantity);
+            await db.ref(`products/${pKey}`).update({
+              variants: JSON.stringify(variants),
+              stock: newTotalStock,
+              updated_at: new Date().toISOString()
+            });
+          }
+        }
+      }
+
       await db.ref(`orders/${key}`).update({ 
         status: 'batal',
         cancel_reason: reason,

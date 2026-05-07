@@ -71,7 +71,7 @@ async function remove(item) {
         </NuxtLink>
       </div>
 
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div v-else class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
         <div v-for="item in wishlistItems" :key="item.id" class="group">
           <div class="aspect-[3/4] bg-neutral-100 border border-border overflow-hidden relative mb-4">
             <img :src="item.image" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />

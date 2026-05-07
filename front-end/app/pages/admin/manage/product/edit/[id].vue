@@ -33,6 +33,7 @@ watch(product, (newVal) => {
         ...v,
         costPrice: v.costPrice || newVal.cost_price || 0,
         discount: v.discount !== undefined ? v.discount : (newVal.discount || 0),
+        sizes: Array.isArray(v.sizes) ? v.sizes.map(s => typeof s === 'string' ? { name: s, stock: 0 } : s) : [],
         existingImages: v.images || [],
         selectedImages: [],
         previewImages: []
@@ -59,8 +60,7 @@ function addVariant() {
     price: 0,
     costPrice: 0,
     discount: 0,
-    stock: 0,
-    sizes: [],
+    sizes: [], // each: { name: '', stock: 0 }
     existingImages: [],
     selectedImages: [],
     previewImages: []
@@ -102,8 +102,8 @@ const newSizeInputs = ref([])
 
 function addSize(vIndex) {
   const val = newSizeInputs.value[vIndex]?.trim()
-  if (val && !variants.value[vIndex].sizes.includes(val)) {
-    variants.value[vIndex].sizes.push(val)
+  if (val && !variants.value[vIndex].sizes.some(s => s.name === val)) {
+    variants.value[vIndex].sizes.push({ name: val, stock: 0 })
     newSizeInputs.value[vIndex] = ''
   }
 }
@@ -126,7 +126,6 @@ async function handleSubmit() {
     price: v.price,
     costPrice: v.costPrice,
     discount: v.discount,
-    stock: v.stock,
     sizes: v.sizes,
     existingImages: v.existingImages,
     imageCount: v.selectedImages.length
@@ -243,8 +242,10 @@ async function handleSubmit() {
                         </div>
                       </div>
                       <div>
-                        <label class="block text-[10px] uppercase tracking-widest font-bold mb-2 text-muted">Stok</label>
-                        <input v-model="variant.stock" type="number" class="w-full border-b border-neutral-200 py-2 focus:outline-none focus:border-soft-black font-sans text-sm" />
+                        <label class="block text-[10px] uppercase tracking-widest font-bold mb-2 text-muted">Stok Total</label>
+                        <div class="w-full border-b border-neutral-100 py-2 font-sans text-sm text-muted bg-neutral-50/50 px-2">
+                          {{ variant.sizes.reduce((acc, s) => acc + parseInt(s.stock || 0), 0) }}
+                        </div>
                       </div>
                     </div>
 
@@ -290,12 +291,25 @@ async function handleSubmit() {
                 </div>
 
                 <div>
-                  <label class="block text-[10px] uppercase tracking-widest font-bold mb-3 text-muted">Ukuran yang Tersedia</label>
-                  <div class="flex flex-wrap gap-2 mb-3">
-                    <span v-for="(size, sIdx) in variant.sizes" :key="sIdx" class="inline-flex items-center gap-2 bg-neutral-100 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest border border-border">
-                      {{ size }}
-                      <button @click="removeSize(vIdx, sIdx)" class="text-muted hover:text-soft-black"><X :size="12" /></button>
-                    </span>
+                  <label class="block text-[10px] uppercase tracking-widest font-bold mb-4 text-muted">Pengaturan Ukuran & Stok</label>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                    <div v-for="(size, sIdx) in variant.sizes" :key="sIdx" class="bg-neutral-50 p-4 border border-border group relative">
+                      <div class="flex justify-between items-start mb-3">
+                        <span class="text-[10px] font-bold uppercase tracking-[0.2em]">{{ size.name }}</span>
+                        <button @click="removeSize(vIdx, sIdx)" class="text-neutral-300 hover:text-red-500 transition-colors">
+                          <X :size="14" />
+                        </button>
+                      </div>
+                      <div class="relative">
+                        <input 
+                          v-model="size.stock" 
+                          type="number" 
+                          class="w-full bg-white border border-border px-3 py-2 text-xs focus:outline-none focus:border-soft-black transition-colors"
+                          placeholder="Stok"
+                        />
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[8px] uppercase tracking-widest font-bold text-neutral-300">PCS</span>
+                      </div>
+                    </div>
                   </div>
                   <div class="flex gap-2 max-w-xs">
                     <input v-model="newSizeInputs[vIdx]" @keyup.enter="addSize(vIdx)" type="text" placeholder="misal: XL" class="flex-1 bg-neutral-50 border border-neutral-200 px-4 py-2 text-[10px] uppercase tracking-widest focus:outline-none focus:border-soft-black" />

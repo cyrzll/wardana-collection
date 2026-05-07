@@ -119,7 +119,7 @@ async function handleUpdateWallet() {
   loading.value = true
   try {
     const finalBalance = parseFloat(walletForm.value.balance) + parseFloat(walletForm.value.topupAmount || 0)
-    await $fetch('/api/admin/users/wallet', {
+    await $fetch('/api/users/wallet', {
       method: 'PUT',
       body: {
         user_id: selectedUserForWallet.value.id,

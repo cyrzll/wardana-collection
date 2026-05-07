@@ -21,6 +21,11 @@ const showPassword = ref(false)
 const showCurrentPin = ref(false)
 const showNewPin = ref(false)
 
+// PIN Setup Modal State
+const showPinModal = ref(false)
+const pinInput = ref('')
+const showPin = ref(false)
+
 function resetChangePin() {
   showChangePinModal.value = false
   changePinStep.value = 1

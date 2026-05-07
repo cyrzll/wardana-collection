@@ -14,14 +14,14 @@ const config = useRuntimeConfig()
   <main class="w-full overflow-hidden">
     <!-- Hero Section -->
     <section class="relative min-h-screen flex items-center pt-20 overflow-hidden bg-soft-white">
-      <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
-        <span class="text-[25vw] font-serif italic text-black/5 leading-none whitespace-nowrap">Kemewahan Esensial</span>
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden opacity-50 md:opacity-100">
+        <span class="text-[35vw] md:text-[25vw] font-serif italic text-black/5 leading-none whitespace-nowrap">Wardana</span>
       </div>
 
       <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative z-10">
         <div v-motion-fade-visible-once="{ initial: { opacity: 0, x: -50 }, enter: { opacity: 1, x: 0, transition: { duration: 1000 } } }">
           <h2 class="text-xs uppercase tracking-[0.5em] text-muted mb-6">Spring Summer 2024</h2>
-          <h1 class="text-6xl md:text-8xl font-serif mb-8 leading-tight">
+          <h1 class="text-5xl md:text-8xl font-serif mb-8 leading-tight">
             Seni dalam <br />
             <span class="italic">Kesederhanaan.</span>
           </h1>

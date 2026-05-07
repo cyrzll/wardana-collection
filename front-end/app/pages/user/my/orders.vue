@@ -215,7 +215,7 @@ function formatDate(date) {
               </div>
 
               <!-- Summary -->
-              <div class="md:col-span-4 border-l border-border pl-8 space-y-6 flex flex-col justify-between">
+              <div class="md:col-span-4 border-t md:border-t-0 md:border-l border-border pt-6 md:pt-0 md:pl-8 space-y-6 flex flex-col justify-between">
                 <div class="space-y-4">
                   <div class="flex justify-between text-[10px] uppercase tracking-widest text-muted">
                     <span>Total Belanja</span>

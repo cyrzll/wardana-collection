@@ -3,6 +3,7 @@ import {
   ShoppingBag, 
   Search, 
   Menu, 
+  X,
   User, 
   LogOut, 
   LayoutDashboard,
@@ -15,6 +16,7 @@ import {
 } from 'lucide-vue-next'
 
 const user = ref(null)
+const showMobileMenu = ref(false)
 const showMenu = ref(false)
 const showCartPreview = ref(false)
 const showWishlistPreview = ref(false)
@@ -75,7 +77,7 @@ function proceedToCheckoutNav() {
 
 <template>
   <nav class="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-border transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-6 md:px-10 h-16 md:h-20 flex items-center justify-between">
       <!-- Left: Menu -->
       <nav class="hidden md:flex items-center gap-10">
         <NuxtLink to="/" class="text-[11px] uppercase tracking-[0.25em] font-medium hover:text-soft-black transition-colors">Beranda</NuxtLink>
@@ -137,31 +139,83 @@ function proceedToCheckoutNav() {
       </nav>
       
       <!-- Mobile Menu Icon -->
-      <button class="md:hidden">
+      <button class="md:hidden hover:opacity-50 transition-opacity p-1 -ml-1" @click="showMobileMenu = true">
         <Menu :size="20" />
       </button>
 
+      <!-- Mobile Menu Drawer -->
+      <Teleport to="body">
+        <Transition name="drawer">
+          <div v-if="showMobileMenu" class="fixed inset-0 z-[100] md:hidden">
+            <!-- Backdrop -->
+            <div class="absolute inset-0 bg-soft-black/60 backdrop-blur-sm" @click="showMobileMenu = false"></div>
+            
+            <!-- Content -->
+            <div class="mobile-drawer-surface absolute top-0 left-0 w-[80%] h-full bg-white shadow-2xl flex flex-col p-8 z-10">
+              <div class="flex justify-between items-center mb-12">
+                <h1 class="text-xl font-serif tracking-widest uppercase">WARDANA</h1>
+                <button @click="showMobileMenu = false" class="text-muted"><X :size="20" /></button>
+              </div>
+
+              <nav class="flex-1 space-y-8">
+                <NuxtLink to="/" @click="showMobileMenu = false" class="block text-sm uppercase tracking-[0.3em] font-bold border-b border-border pb-4">Beranda</NuxtLink>
+                <NuxtLink to="/product/all" @click="showMobileMenu = false" class="block text-sm uppercase tracking-[0.3em] font-bold border-b border-border pb-4">Belanja</NuxtLink>
+                
+                <div class="space-y-6 pt-4">
+                  <h3 class="text-[10px] uppercase tracking-[0.4em] font-bold text-muted">Kategori</h3>
+                  <div class="grid grid-cols-1 gap-4">
+                    <NuxtLink 
+                      v-for="cat in categories" 
+                      :key="cat.id"
+                      :to="`/product/all?category=${cat.id}`"
+                      @click="showMobileMenu = false"
+                      class="text-xs uppercase tracking-widest font-medium text-neutral-500 hover:text-soft-black"
+                    >
+                      {{ cat.name }}
+                    </NuxtLink>
+                  </div>
+                </div>
+              </nav>
+
+              <div class="pt-8 border-t border-border mt-auto">
+                <template v-if="user">
+                  <NuxtLink to="/user/settings" @click="showMobileMenu = false" class="flex items-center gap-3 py-3 text-xs uppercase tracking-widest font-bold">
+                    <Settings :size="16" /> Pengaturan Akun
+                  </NuxtLink>
+                  <button @click="logout" class="flex items-center gap-3 py-3 text-xs uppercase tracking-widest font-bold text-red-600">
+                    <LogOut :size="16" /> Keluar
+                  </button>
+                </template>
+                <NuxtLink v-else to="/auth/login" @click="showMobileMenu = false" class="block w-full bg-soft-black text-white text-center py-4 text-xs uppercase tracking-[0.2em] font-bold">
+                  Masuk Akun
+                </NuxtLink>
+              </div>
+            </div>
+          </div>
+        </Transition>
+      </Teleport>
+
       <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-        <NuxtLink to="/" class="text-2xl font-serif tracking-[0.2em] uppercase">WARDANA</NuxtLink>
+        <NuxtLink to="/" class="text-xl md:text-2xl font-serif tracking-[0.2em] uppercase">WARDANA</NuxtLink>
       </div>
 
       <!-- Right: Actions -->
-      <div class="flex items-center space-x-6">
-        <button class="hover:opacity-50 transition-opacity">
+      <div class="flex items-center space-x-4 md:space-x-6">
+        <button class="hover:opacity-50 transition-opacity hidden sm:block">
           <Search :size="20" />
         </button>
         
-        <div class="relative group h-20 flex items-center" 
+        <div class="relative group h-16 md:h-20 hidden md:flex items-center" 
              @mouseenter="showMenu = true" 
              @mouseleave="showMenu = false">
-          <div v-if="user" class="h-20 flex items-center cursor-pointer">
+          <div v-if="user" class="h-full flex items-center cursor-pointer">
             <img v-if="user.profile_image" :src="resolveImage(user.profile_image)" class="w-8 h-8 rounded-full object-cover border border-border shadow-sm" />
             <User v-else :size="20" />
           </div>
           <NuxtLink 
             v-else 
             to="/auth/login" 
-            class="h-20 flex items-center hover:opacity-50 transition-opacity"
+            class="h-full flex items-center hover:opacity-50 transition-opacity"
           >
             <User :size="20" />
           </NuxtLink>
@@ -329,6 +383,31 @@ function proceedToCheckoutNav() {
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateY(5px);
+}
+
+.drawer-enter-active, .drawer-leave-active {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.drawer-enter-active .mobile-drawer-surface,
+.drawer-leave-active .mobile-drawer-surface {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.drawer-enter-from {
+  opacity: 0;
+}
+.drawer-enter-from .mobile-drawer-surface {
+  transform: translateX(-100%);
+}
+.drawer-leave-to {
+  opacity: 0;
+}
+.drawer-leave-to .mobile-drawer-surface {
+  transform: translateX(-100%);
+}
+
+.mobile-drawer-surface {
+  background-color: #ffffff !important;
+  opacity: 1 !important;
 }
 
 .custom-scrollbar::-webkit-scrollbar {

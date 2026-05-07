@@ -137,8 +137,8 @@ function formatCurrency(val) {
 }
 
 const adminModules = [
-  { title: 'Produk & Stok', description: 'Atur katalog dan pantau gudang.', path: '/admin/manage/product', icon: Package, color: 'bg-orange-50 text-orange-600' },
-  { title: 'Pesanan', description: 'Monitor transaksi masuk harian.', path: '/admin/orders', icon: ClipboardList, color: 'bg-blue-50 text-blue-600' },
+  { title: 'Produk & Stok', description: 'Atur katalog dan pantau gudang.', path: '/admin/manage/allproduct', icon: Package, color: 'bg-orange-50 text-orange-600' },
+  { title: 'Pesanan', description: 'Monitor transaksi masuk harian.', path: '/admin/manage/orders', icon: ClipboardList, color: 'bg-blue-50 text-blue-600' },
   { title: 'Analisis Profit', description: 'Laporan margin & pertumbuhan.', path: '/admin/manage/cashflow/margin', icon: TrendingUp, color: 'bg-green-50 text-green-600' },
 ]
 </script>
@@ -221,7 +221,7 @@ const adminModules = [
     <div class="space-y-8">
       <div class="flex items-center justify-between border-b border-border pb-4">
         <h3 class="text-xs uppercase tracking-[0.3em] font-bold">Status Pesanan Saat Ini</h3>
-        <NuxtLink to="/admin/orders" class="text-[9px] uppercase tracking-widest font-bold underline underline-offset-4 hover:text-blue-600">Lihat Semua Pesanan</NuxtLink>
+        <NuxtLink to="/admin/manage/orders" class="text-[9px] uppercase tracking-widest font-bold underline underline-offset-4 hover:text-blue-600">Lihat Semua Pesanan</NuxtLink>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div v-for="status in orderStatuses" :key="status.label" 

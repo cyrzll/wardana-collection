@@ -229,7 +229,7 @@ async function handleFinalCheckout() {
         <!-- Main Content -->
         <div class="lg:col-span-8 space-y-8">
           <!-- Shipping Address -->
-          <section class="bg-white p-8 border border-border space-y-6">
+          <section class="bg-white p-6 md:p-8 border border-border space-y-6">
             <div class="flex items-center justify-between border-b border-border pb-4">
               <h2 class="text-xs uppercase tracking-[0.2em] font-bold flex items-center gap-3">
                 <MapPin :size="18" />
@@ -259,7 +259,7 @@ async function handleFinalCheckout() {
           </section>
 
           <!-- Shipping Method -->
-          <section class="bg-white p-8 border border-border space-y-6">
+          <section class="bg-white p-6 md:p-8 border border-border space-y-6">
             <div class="flex items-center justify-between border-b border-border pb-4">
               <h2 class="text-xs uppercase tracking-[0.2em] font-bold flex items-center gap-3">
                 <Truck :size="18" />
@@ -302,7 +302,7 @@ async function handleFinalCheckout() {
           </section>
 
           <!-- Selected Products -->
-          <section class="bg-white p-8 border border-border space-y-8">
+          <section class="bg-white p-6 md:p-8 border border-border space-y-8">
             <h2 class="text-xs uppercase tracking-[0.2em] font-bold flex items-center gap-3 border-b border-border pb-4">
               <ShoppingBag :size="18" />
               Rincian Produk
@@ -325,8 +325,8 @@ async function handleFinalCheckout() {
             </div>
           </section>
 
-          <!-- Shipping Method (Duplicate Removed, replaced with Payment Method) -->
-          <section class="bg-white p-8 border border-border space-y-6">
+          <!-- Payment Method -->
+          <section class="bg-white p-6 md:p-8 border border-border space-y-6">
             <h2 class="text-xs uppercase tracking-[0.2em] font-bold flex items-center gap-3 border-b border-border pb-4">
               <CreditCard :size="18" />
               Metode Pembayaran
@@ -395,7 +395,7 @@ async function handleFinalCheckout() {
           </div>
 
           <!-- Final Summary -->
-          <div class="bg-neutral-100 p-8 border border-border text-soft-black shadow-sm sticky top-32">
+          <div class="bg-neutral-100 p-6 md:p-8 border border-border text-soft-black shadow-sm sticky top-32">
             <h2 class="text-xs uppercase tracking-[0.2em] font-bold mb-8 pb-4 border-b border-border">Ringkasan Pembayaran</h2>
             
             <div class="space-y-4 mb-8">

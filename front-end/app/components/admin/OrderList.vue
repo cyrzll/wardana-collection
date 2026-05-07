@@ -15,6 +15,15 @@ const loading = ref(true)
 const search = ref('')
 const { showAlert, showConfirm } = useAlert()
 
+// Detail Modal States
+const showDetailModal = ref(false)
+const orderDetail = ref(null)
+
+function openDetailModal(order) {
+  orderDetail.value = order
+  showDetailModal.value = true
+}
+
 // Cancel Order Modal States
 const showCancelModal = ref(false)
 const selectedOrder = ref(null)
@@ -196,7 +205,7 @@ async function updateStatus(order, newStatus) {
                 <button v-if="order.status === 'dikemas'" @click="openCancelModal(order)" class="p-2 hover:bg-red-50 text-red-600 transition-colors" title="Batalkan Pesanan">
                   <XCircle :size="16" />
                 </button>
-                <button class="p-2 hover:bg-neutral-100 text-soft-black transition-colors">
+                <button @click="openDetailModal(order)" class="p-2 hover:bg-neutral-100 text-soft-black transition-colors" title="Detail Pesanan">
                   <Eye :size="16" />
                 </button>
               </div>
@@ -205,6 +214,135 @@ async function updateStatus(order, newStatus) {
         </tbody>
       </table>
     </div>
+
+    <!-- Order Detail Modal -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="showDetailModal" class="fixed inset-0 z-[100] flex items-center justify-center p-6">
+          <div class="absolute inset-0 bg-soft-black/40 backdrop-blur-sm" @click="showDetailModal = false"></div>
+          <div class="bg-white w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col border border-border shadow-2xl" v-motion-fade>
+            <!-- Modal Header -->
+            <div class="p-8 border-b border-border flex items-center justify-between bg-neutral-50">
+              <div>
+                <div class="flex items-center gap-3 mb-1">
+                  <h3 class="text-2xl font-serif text-soft-black">Detail Pesanan</h3>
+                  <span 
+                    class="px-3 py-1 border text-[9px] font-bold uppercase tracking-widest"
+                    :class="getStatusColor(orderDetail.status)"
+                  >
+                    {{ orderDetail.status }}
+                  </span>
+                </div>
+                <p class="text-xs text-muted tracking-widest uppercase">#{{ orderDetail.order_number }} • {{ formatDate(orderDetail.created_at) }}</p>
+              </div>
+              <button @click="showDetailModal = false" class="p-2 hover:bg-neutral-200 rounded-full transition-colors">
+                <XCircle :size="24" class="text-soft-black" />
+              </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="flex-1 overflow-y-auto p-8 space-y-10 no-scrollbar">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <!-- Customer & Shipping Info -->
+                <div class="space-y-8">
+                  <div class="space-y-4">
+                    <h4 class="text-[10px] uppercase tracking-[0.2em] font-bold text-muted border-b border-border pb-2">Informasi Pembeli</h4>
+                    <div class="flex items-start gap-4">
+                      <div class="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center border border-border shrink-0">
+                        <User :size="18" class="text-neutral-400" />
+                      </div>
+                      <div>
+                        <p class="text-sm font-bold text-soft-black">{{ orderDetail.recipient_name }}</p>
+                        <p class="text-xs text-muted">{{ orderDetail.user.email }}</p>
+                        <p class="text-xs text-muted mt-1">{{ orderDetail.phone }}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="space-y-4">
+                    <h4 class="text-[10px] uppercase tracking-[0.2em] font-bold text-muted border-b border-border pb-2">Alamat Pengiriman</h4>
+                    <div class="flex items-start gap-4 text-soft-black">
+                      <MapPin :size="18" class="text-neutral-400 shrink-0 mt-1" />
+                      <p class="text-xs leading-relaxed">{{ orderDetail.address_detail }}</p>
+                    </div>
+                  </div>
+
+                  <div class="space-y-4">
+                    <h4 class="text-[10px] uppercase tracking-[0.2em] font-bold text-muted border-b border-border pb-2">Metode Pembayaran</h4>
+                    <div class="flex items-start gap-4 text-soft-black">
+                      <CreditCard :size="18" class="text-neutral-400 shrink-0 mt-1" />
+                      <div>
+                        <p class="text-xs font-bold uppercase tracking-wider">{{ orderDetail.payment_method }}</p>
+                        <p class="text-[10px] text-muted mt-1">Status: Terbayar Otomatis</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-if="orderDetail.cancel_reason" class="p-4 bg-red-50 border border-red-100 space-y-2">
+                    <p class="text-[9px] uppercase tracking-widest font-bold text-red-600">Alasan Pembatalan</p>
+                    <p class="text-xs text-red-700 italic">"{{ orderDetail.cancel_reason }}"</p>
+                  </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="space-y-6">
+                  <h4 class="text-[10px] uppercase tracking-[0.2em] font-bold text-muted border-b border-border pb-2">Item Pesanan</h4>
+                  <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2 no-scrollbar">
+                    <div v-for="(item, idx) in orderDetail.items" :key="idx" class="flex gap-4 p-3 border border-border bg-neutral-50/30">
+                      <div class="w-16 h-16 bg-white border border-border overflow-hidden shrink-0">
+                        <img :src="item.image" class="w-full h-full object-cover" />
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold text-soft-black truncate">{{ item.name }}</p>
+                        <p class="text-[10px] text-muted mt-0.5">Varian: {{ item.variant }} | Ukuran: {{ item.size }}</p>
+                        <div class="flex justify-between items-end mt-2">
+                          <p class="text-[10px] text-muted">{{ item.quantity }}x Rp{{ item.price.toLocaleString() }}</p>
+                          <p class="text-xs font-bold text-soft-black">Rp{{ (item.price * item.quantity).toLocaleString() }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Price Breakdown -->
+                  <div class="bg-neutral-50 p-6 space-y-3 border border-border">
+                    <div class="flex justify-between text-[10px] text-muted uppercase tracking-widest">
+                      <span>Subtotal</span>
+                      <span>Rp{{ (orderDetail.total_amount || 0).toLocaleString() }}</span>
+                    </div>
+                    <div class="flex justify-between text-[10px] text-muted uppercase tracking-widest">
+                      <span>Ongkos Kirim</span>
+                      <span>Rp{{ (orderDetail.shipping_cost || 0).toLocaleString() }}</span>
+                    </div>
+                    <div v-if="orderDetail.discount_amount" class="flex justify-between text-[10px] text-red-600 uppercase tracking-widest">
+                      <span>Diskon Voucher</span>
+                      <span>-Rp{{ (orderDetail.discount_amount || 0).toLocaleString() }}</span>
+                    </div>
+                    <div class="pt-3 border-t border-border flex justify-between items-center">
+                      <span class="text-[11px] font-bold text-soft-black uppercase tracking-[0.2em]">Total Pembayaran</span>
+                      <span class="text-lg font-serif text-soft-black">Rp{{ (orderDetail.final_amount || 0).toLocaleString() }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-8 border-t border-border flex justify-end gap-4 bg-neutral-50">
+              <button @click="showDetailModal = false" class="px-8 py-3 border border-border text-[10px] uppercase tracking-widest font-bold hover:bg-neutral-200 transition-all">
+                Tutup
+              </button>
+              <button 
+                v-if="orderDetail.status === 'dikemas'"
+                @click="updateStatus(orderDetail, 'dikirim'); showDetailModal = false" 
+                class="px-8 py-3 bg-soft-black text-white text-[10px] uppercase tracking-widest font-bold hover:bg-neutral-800 transition-all flex items-center gap-2"
+              >
+                <Truck :size="14" /> Kirim Sekarang
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
 
     <!-- Admin Cancel Modal -->
     <Teleport to="body">
