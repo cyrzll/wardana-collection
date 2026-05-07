@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* ── Fonts ── */
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+
+  /* ── Colors ── */
+  --color-soft-black: #121212;
+  --color-soft-white: #F9F9F9;
+  
+  --color-primary: var(--color-soft-black);
+  --color-background: var(--color-soft-white);
+  --color-foreground: var(--color-soft-black);
+  
+  --color-border: #E5E5E5;
+  --color-muted: #737373;
+
+  /* ── Sharp Corners ── */
+  --radius-none: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+  --radius-DEFAULT: 0px;
+}
+
+/* ── Base Styles ── */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-medium;
+  }
+
+  * {
+    @apply border-border;
+  }
+}
+
+/* ── Custom Utilities ── */
+@layer utilities {
+  .text-luxury {
+    @apply font-serif italic tracking-tight;
+  }
+  
+  .btn-luxury {
+    @apply px-8 py-3 bg-soft-black text-white uppercase tracking-widest text-xs transition-all duration-300 hover:bg-neutral-800 disabled:opacity-50;
+  }
+
+  .btn-outline-luxury {
+    @apply px-8 py-3 border border-soft-black text-soft-black uppercase tracking-widest text-xs transition-all duration-300 hover:bg-soft-black hover:text-white disabled:opacity-50;
+  }
+
+  .border-sharp {
+    @apply rounded-none;
+  }
+}
+
+/* ── Animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
