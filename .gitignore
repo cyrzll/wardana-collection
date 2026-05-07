@@ -1,14 +1,3 @@
-# Nuxt dev/build outputs
-# .output
-.data
-.nuxt
-.nitro
-.cache
-dist
-
-# Node dependencies
-node_modules
-
 # Logs
 logs
 *.log
@@ -16,8 +5,36 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+front-end/dev.log
 
-# Misc
+# Node dependencies
+node_modules/
+**/node_modules/
+
+# Nuxt & Build outputs
+.output/
+.nuxt/
+.nitro/
+.cache/
+.data/
+dist/
+**/ .output/
+**/ .nuxt/
+**/ .nitro/
+**/ .cache/
+
+# Environment files
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+
+# Firebase & Secrets
+*-firebase-adminsdk-*.json
+api/*.json
+
+# OS & IDEs
 .DS_Store
 .fleet
 .idea
@@ -25,34 +42,22 @@ pnpm-debug.log*
 *.sublime-project
 *.sublime-workspace
 .history
+**/.DS_Store
 
-# Local env files
-.env
-.env.*
-!.env.example
+# Backups
+*_backup/
+**/server_backup/
 
-# Test
-/coverage
-/.nyc_output
-
-# Build
-.serverless
+# Scratch & Temporary files
+scratch/
+**/scratch/
+**/scratch_*.ts
+*.db
+*.sqlite
+.terser
 .fusebox/
 .dynamodb/
-.terser
-
-# IDEs and editors
-.project
-.classpath
-.settings/
-*.launch
-.factorypath
-.springBeans
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
+.serverless
 
 # Prisma
-/app/generated/prisma
+**/generated/prisma
