@@ -17,8 +17,8 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   nitro: {
     routeRules: {
-      '/api/**': { proxy: 'http://localhost:4000/api/**' },
-      '/images/**': { proxy: 'http://localhost:4000/images/**' }
+      '/api/**': { proxy: (process.env.API_BASE_URL || 'http://localhost:4000/api') + '/**' },
+      '/images/**': { proxy: (process.env.IMAGE_CDN_URL || 'http://localhost:4000/images') + '/**' }
     },
     externals: {
       external: ['better-sqlite3', '@prisma/client']
