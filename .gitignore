@@ -32,7 +32,6 @@ dist/
 
 # Firebase & Secrets
 *-firebase-adminsdk-*.json
-api/*.json
 
 # OS & IDEs
 .DS_Store
